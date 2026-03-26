@@ -11,7 +11,7 @@ const Main = () => {
 		const fetchNews = async () => {
 			try {
 				const response = await getNews()
-				setNews(response.news)
+				setNews(response.articles)
 			} catch (error) {
 				console.log(error)
 			}
