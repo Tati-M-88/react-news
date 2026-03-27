@@ -1,0 +1,13 @@
+.search {
+	background-color: #fff;
+	display: flex;
+	gap: 12px;
+	width: 100%;
+}
+
+.input {
+	border: 1px solid #f2f3f5;
+	border-radius: 12px;
+	padding: 10px;
+	width: 100%;
+}
