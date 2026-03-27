@@ -1,32 +1,56 @@
 import { useEffect, useState } from 'react'
 import NewsBanner from '../../components/NewsBanner/NewsBanner'
 import styles from './styles.module.css'
-import { getNews } from '../../api/apiNews'
+import { getCategories, getNews } from '../../api/apiNews'
 import NewsList from '../../components/NewsList/NewsList'
 import Skeleton from '../../components/Skeleton/Skeleton'
 import Pagination from '../../components/Pagination/Pagination'
+import Categories from '../../components/Categories/Categories'
 
 const Main = () => {
 	const [news, setNews] = useState([])
 	const [isLoading, setIsLoading] = useState(true)
 	const [currentPage, setCurrentPage] = useState(1)
+	const [categories, setCategories] = useState([])
+	const [selectedCategory, setSelectedCategory] = useState('Все')
 	const totalPages = 10
 	const pageSize = 10
 
-	useEffect(() => {
-		const fetchNews = async () => {
-			try {
-				setIsLoading(true)
-				const response = await getNews(currentPage, pageSize)
-				console.log(response.articles)
-				setNews(response.articles)
-				setIsLoading(false)
-			} catch (error) {
-				console.log(error)
-			}
+	const fetchNews = async (currentPage) => {
+		try {
+			setIsLoading(true)
+			const response = await getNews({
+				pageNumber: currentPage,
+				pageSize: pageSize,
+				category: selectedCategory === 'Все' ? null : selectedCategory
+			})
+			setNews(response.articles)
+			setIsLoading(false)
+		} catch (error) {
+			console.log(error)
 		}
+	}
+
+	const fetchCategories = async () => {
+		try {
+			const response = await getCategories()
+			const processedData = response.sources.map(category => {
+				return category.category
+			});
+			const uniqueCategoryList = [...new Set(processedData)]
+			setCategories(['Все', ...uniqueCategoryList])
+		} catch (error) {
+			console.log(error)
+		}
+	}
+
+	useEffect(() => {
 		fetchNews(currentPage)
-	}, [currentPage])
+	}, [currentPage, selectedCategory])
+
+	useEffect(() => {
+		fetchCategories()
+	}, [])
 
 	const handleNextPage = () => {
 		if (currentPage < totalPages) {
@@ -46,21 +70,26 @@ const Main = () => {
 
 	return (
 		<main className={styles.main}>
+			<Categories
+				categories={categories}
+				setSelectedCategory={setSelectedCategory}
+				selectedCategory={selectedCategory} />
+
 			{news.length > 0 && !isLoading ? <NewsBanner item={news[0]} /> : <Skeleton type='banner' count={1} />}
 
-			<Pagination 
-				handleNextPage={handleNextPage} 
-				handlePreviousPage={handlePreviousPage} 
-				handlePageClick={handlePageClick} 
+			<Pagination
+				handleNextPage={handleNextPage}
+				handlePreviousPage={handlePreviousPage}
+				handlePageClick={handlePageClick}
 				totalPages={totalPages}
 				currentPage={currentPage} />
 
 			{!isLoading ? <NewsList news={news} /> : <Skeleton type='item' count={10} />}
 
-			<Pagination 
-				handleNextPage={handleNextPage} 
-				handlePreviousPage={handlePreviousPage} 
-				handlePageClick={handlePageClick} 
+			<Pagination
+				handleNextPage={handleNextPage}
+				handlePreviousPage={handlePreviousPage}
+				handlePageClick={handlePageClick}
 				totalPages={totalPages}
 				currentPage={currentPage} />
 		</main>
