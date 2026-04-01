@@ -8,6 +8,8 @@ import Pagination from '../../components/Pagination/Pagination'
 import Categories from '../../components/Categories/Categories'
 import Search from '../../components/Search/Search'
 import { useDebounce } from '../../helpers/hooks/useDebounce'
+import LatestNews from '../../components/LatestNews/LatestNews'
+import NewsByFilters from '../../components/NewsByFilters/NewsByFilters'
 
 const Main = () => {
 	const [news, setNews] = useState([])
@@ -32,6 +34,8 @@ const Main = () => {
 			})
 			setNews(response.articles)
 			setIsLoading(false)
+
+			console.log('News: ', response.articles)
 		} catch (error) {
 			console.log(error)
 		}
@@ -76,12 +80,38 @@ const Main = () => {
 
 	return (
 		<main className={styles.main}>
+
 			<Categories
 				categories={categories}
 				setSelectedCategory={setSelectedCategory}
 				selectedCategory={selectedCategory} />
 
 			<Search keywords={keywords} setKeywords={setKeywords} />
+
+			{/* <section className={styles.mainSection}> */}
+				<LatestNews isLoading={isLoading} banners={news} />
+
+				{news.length > 0 && !isLoading ? <NewsBanner item={news[0]} /> : <Skeleton type='banner' count={1} />}
+
+				<Pagination
+					handleNextPage={handleNextPage}
+					handlePreviousPage={handlePreviousPage}
+					handlePageClick={handlePageClick}
+					totalPages={totalPages}
+					currentPage={currentPage} />
+
+				{!isLoading ? <NewsList news={news} /> : <Skeleton type='item' count={10} />}
+
+				<Pagination
+					handleNextPage={handleNextPage}
+					handlePreviousPage={handlePreviousPage}
+					handlePageClick={handlePageClick}
+					totalPages={totalPages}
+					currentPage={currentPage} />
+			{/* </section> */}
+			{/* 
+
+			<NewsByFilters isLoading={isLoading} news={news} handleNextPage={handleNextPage} handlePreviousPage={handlePreviousPage} handlePageClick={handlePageClick} totalPages={totalPages} />
 
 			{news.length > 0 && !isLoading ? <NewsBanner item={news[0]} /> : <Skeleton type='banner' count={1} />}
 
@@ -99,7 +129,7 @@ const Main = () => {
 				handlePreviousPage={handlePreviousPage}
 				handlePageClick={handlePageClick}
 				totalPages={totalPages}
-				currentPage={currentPage} />
+				currentPage={currentPage} /> */}
 		</main>
 	)
 }

@@ -4,6 +4,20 @@
 	gap: 12px;
 }
 
+.columnList {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.rowList {
+	box-sizing: border-box;
+	display: grid;
+	gap: 12px;
+	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+	width: 100%;
+}
+
 .banner {
 	padding-top: 100%;
 	position: relative;
